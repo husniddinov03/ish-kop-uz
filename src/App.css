@@ -1,0 +1,15 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.default-title-text {
+    font-size: 35px;
+    font-weight: 700;
+}
+
+.default-desc-text {
+    font-size: 20px;
+    font-weight: 500;
+}
