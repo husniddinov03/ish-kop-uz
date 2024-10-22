@@ -1,47 +1,79 @@
-import React, { useState } from 'react';
-import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  Label,
-  Input,
-  FormGroup,
-  Form,
-} from 'reactstrap';
-import { useInfoContext } from '../../Context/UseInfoContext';
+import React, { useState, useEffect } from 'react';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, FormGroup, Label } from 'reactstrap';
 
-function ModalComponent(props) {
-  const [focusAfterClose, setFocusAfterClose] = useState(true);
-  const { open, setOpen } = useInfoContext()
+const ModalComponent = ({ isOpen, toggle, data, handleSave }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    pricePerDay: '',
+    createdDate: ''
+  });
 
-  const toggle = () => setOpen(!open);
+  
 
-  // const handleSelectChange = ({ target: { value } }) => {
-  //   setFocusAfterClose(JSON.parse(value));
-  // };
+  // Pre-fill the modal input fields when data changes
+  useEffect(() => {
+    if (data) {
+      setFormData({
+        name: data.name || '',
+        pricePerDay: data.pricePerDay || '',
+        createdDate: data.createdDate || ''
+      });
+    }
+  }, [data]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const saveChanges = () => {
+    handleSave(formData);  // Call the save function with the updated data
+  };
 
   return (
-    <div>
-      <Form inline onSubmit={(e) => e.preventDefault()}>
-        <Button color="danger" onClick={toggle}>
-          Open
-        </Button>
-      </Form>
-      <Modal returnFocusAfterClose={focusAfterClose} isOpen={open}>
-        <ModalBody>
-          Observe the &ldquo;Open&ldquo; button. It will be focused after close
-          when &ldquo;returnFocusAfterClose&ldquo; is true and will not be
-          focused if &ldquo;returnFocusAfterClose&ldquo; is false.
-        </ModalBody>
-        {/* <ModalFooter>
-          <Button color="primary" onClick={toggle}>
-            Close
-          </Button>
-        </ModalFooter> */}
-      </Modal>
-    </div>
+    <Modal isOpen={isOpen} toggle={toggle}>
+      <ModalHeader toggle={toggle}>Edit Data</ModalHeader>
+      <ModalBody>
+        <FormGroup>
+          <Label for="name">Name</Label>
+          <Input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+          />
+        </FormGroup>
+        <FormGroup>
+          <Label for="pricePerDay">Price Per Day</Label>
+          <Input
+            type="number"
+            id="pricePerDay"
+            name="pricePerDay"
+            value={formData.pricePerDay}
+            onChange={handleInputChange}
+          />
+        </FormGroup>
+        <FormGroup>
+          <Label for="createdDate">Created Date</Label>
+          <Input
+            type="date"
+            id="createdDate"
+            name="createdDate"
+            value={formData.createdDate}
+            onChange={handleInputChange}
+          />
+        </FormGroup>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="primary" onClick={saveChanges}>Save</Button>{' '}
+        <Button color="secondary" onClick={toggle}>Cancel</Button>
+      </ModalFooter>
+    </Modal>
   );
-}
+};
 
 export default ModalComponent;

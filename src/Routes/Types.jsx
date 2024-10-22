@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'; 
+import React, { useEffect, useState } from 'react';
 import { useInfoContext } from '../Context/UseInfoContext';
 import { Form, Input, Button } from 'reactstrap';
 import { TableComponent } from '../Components';
@@ -21,6 +21,31 @@ const Types = () => {
         'Created Date',
         'ID',
     ];
+
+    const modalOjects = [
+        {
+            id: 1,
+            name: "NameUz",
+            inputType: "string"
+        },
+        {
+            id: 2,
+            name: "NameEn",
+            inputType: "string"
+        },
+        {
+            id: 3,
+            name: "NameRu",
+            inputType: "string"
+        },
+        {
+            id: 4,
+            name: "pricePerDay",
+            inputType: "number"
+        },
+
+    ]
+
 
     const getAllTypes = async () => {
         const anyType = await fetchData(`ann-types/read?10=10&page=${typesPagination < 1 ? 1 : typesPagination}`);

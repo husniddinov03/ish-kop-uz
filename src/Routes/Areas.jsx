@@ -16,6 +16,9 @@ const Areas = () => {
         setAreas(fetchedAreas?.data?.data?.content || []);  // Handle null case
     };
 
+ 
+
+
     // Call fetch areas on component mount and when pagination changes
     useEffect(() => {
         getAllAreas();
@@ -26,6 +29,10 @@ const Areas = () => {
         e.preventDefault();
         const formData = new FormData(e.target);
         const dataObject = Object.fromEntries(formData.entries());
+        console.log(formData);
+        console.log(dataObject);
+        
+        
 
         // Call createData and then refresh the areas list
         await createData(dataObject, 'areas/create');

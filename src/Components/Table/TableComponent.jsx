@@ -8,10 +8,9 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import TablePagination from '@mui/material/TablePagination';
-import { useInfoContext } from '../../Context/UseInfoContext';
-import ModalComponent from '../Modal/ModalComponent';
+import { Button } from '@mui/material';
+import ModalComponent from '../Modal/ModalComponent';  // Import the Edit modal
 
-// Styled components
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: theme.palette.common.black,
@@ -31,31 +30,43 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-export default function TableComponent({ data, titleTable }) {
-    // const [thId, setThId] = React.useState(null)
-    const { setThId } = useInfoContext()
+
+
+
+export default function TableComponent({ data, titleTable, modalData }) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [modalData, setModalData] = React.useState(null);  // Data for editing
+    const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);  // Control modal visibility
+// const {handleSave}=useInfoContext()
 
-    // Handle page change
+
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
 
-    // Handle rows per page change
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
 
-    // Handle row click to log the ID
-    const handleRowClick = (id) => {
-        setOpen(!open)
-        setThId(id)
+    const currentRows = data?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) || [];
+
+    const handleEdit = (id) => {
+        const selectedData = currentRows.find(row => row.id === id);
+        setModalData(selectedData);  // Set the selected row data
+        setIsEditModalOpen(true);  // Open the edit modal
     };
 
-    // Calculate the current rows to display based on the API data structure
-    const currentRows = data?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) || [];
+    const handleDelete = (id) => {
+        // Implement delete functionality here
+        console.log(`Delete row with id: ${id}`);
+    };
+
+    const handleSave = (updatedData) => {
+        console.log('Updated Data:', updatedData);
+        setIsEditModalOpen(false);  // Close modal after saving
+    };
 
     return (
         <TableContainer component={Paper}>
@@ -65,27 +76,40 @@ export default function TableComponent({ data, titleTable }) {
                         {titleTable.map((title, index) => (
                             <StyledTableCell key={index}>{title}</StyledTableCell>
                         ))}
+                        <StyledTableCell align="center">Actions</StyledTableCell> {/* Actions column header */}
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {currentRows.map((row) => (
-                        <StyledTableRow
-                            key={row.id}
-                            onClick={() => handleRowClick(row.id)} // Capture the row ID on click
-                            style={{ cursor: 'pointer' }} // Add pointer cursor for clickable rows
-                        >
+                        <StyledTableRow key={row.id}>
                             <StyledTableCell align="left">{row.name}</StyledTableCell>
                             <StyledTableCell align="left">{row.pricePerDay === undefined ? null : row.pricePerDay}</StyledTableCell>
                             <StyledTableCell align="left">{row.createdDate}</StyledTableCell>
                             <StyledTableCell align="left">{row.id}</StyledTableCell>
-                        </StyledTableRow>
-                    ))
 
-                    }
+                            {/* Action Buttons Column */}
+                            <StyledTableCell style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => handleEdit(row.id)}  // Open modal on edit click
+                                    style={{ marginRight: '8px' }}
+                                >
+                                    Edit
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    onClick={() => handleDelete(row.id)}  // Delete handler
+                                >
+                                    Delete
+                                </Button>
+                            </StyledTableCell>
+                        </StyledTableRow>
+                    ))}
                 </TableBody>
             </Table>
 
-            {/* Pagination component */}
             <TablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"
@@ -95,8 +119,15 @@ export default function TableComponent({ data, titleTable }) {
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
             />
-            <ModalComponent />
 
+            {/* Edit Modal */}
+            <ModalComponent
+                isOpen={isEditModalOpen}
+                toggle={() => setIsEditModalOpen(!isEditModalOpen)}  // Toggle modal
+                data={modalData}  // Pass the selected data
+                handleSave={handleSave}  // Pass save handler
+                modalData={modalData}
+            />
         </TableContainer>
     );
 }
